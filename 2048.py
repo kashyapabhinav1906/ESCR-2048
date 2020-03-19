@@ -20,7 +20,7 @@ with open("highscore.txt", "r") as f:
 clock = pygame.time.Clock()
 
 # for writing in game window
-font = pygame.font.SysFont(None, 30)
+font = pygame.font.SysFont(None, 60)
 def text_screen(text, color, x, y):
     screen_text = font.render(text, True, color)
     game_window.blit(screen_text, [x,y])
@@ -215,11 +215,9 @@ def gameloop():
     global score
     score = 0
     global highscore
-    
+
     # coordinates for first two tiles
-    game_window.fill((255, 255, 255))
     initialise(tiles)
-    mat_to_grid(tiles)
     
     while not exit_game:
         if game_over:
@@ -237,6 +235,9 @@ def gameloop():
                         gameloop()
         
         else:
+            game_window.fill((255, 255, 255))
+            mat_to_grid(tiles)
+    
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     exit_game = True
@@ -255,8 +256,8 @@ def gameloop():
                         mat_to_grid(tiles)
             if score >= int(highscore):
                 highscore = score
-            text_screen("Score: " + str(score), (0, 0, 255), 5, 5)
-            text_screen("Highscore: "+str(highscore), (0, 0, 255), 5, 40)
+        text_screen("Score: " + str(score), (0, 0, 255), 5, 5)
+        text_screen("Highscore: "+str(highscore), (0, 0, 255), 5, 60)
         pygame.display.update()
         clock.tick(60)
     pygame.quit()
