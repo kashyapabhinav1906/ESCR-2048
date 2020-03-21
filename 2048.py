@@ -31,6 +31,58 @@ eg = pygame.image.load('empty_grid.gif')
 GameOver = pygame.image.load('game_over.gif')
 winner = pygame.image.load('winner.gif')
 
+# dictionary of number images
+number_images = {2: numbers[0], 4: numbers[1], 8: numbers[2], 16: numbers[3], 32: numbers[4], 64: numbers[5],
+128: numbers[6], 256: numbers[7], 512: numbers[8], 1024: numbers[9], 2048: numbers[10]}
+
+
+# functions for grid visualisation
+
+def mat_to_grid(tiles):
+    game_window.blit(eg, (0, 200))
+    for i in range(4):
+        for j in range(4):
+            if tiles[i][j] != 0:
+                game_window.blit(number_images[tiles[i][j]], (j*100, (i+2)*100))
+    pygame.display.update()
+
+
+def move_left(image, x1, y1, x2, y2):
+    (x, y) = (x1, y1)
+    game_window.blit(image, (x, y))
+    pygame.display.update()
+    while x>x2:
+        x -= 1
+        game_window.blit(image, (x, y))
+        pygame.display.update()
+
+def move_right(image, x1, y1, x2, y2):
+    (x, y) = (x1, y1)
+    game_window.blit(image, (x, y))
+    pygame.display.update()
+    while x<x2:
+        x += 1
+        game_window.blit(image, (x, y))
+        pygame.display.update()
+
+def move_up(image, x1, y1, x2, y2):
+    (x, y) = (x1, y1)
+    game_window.blit(image, (x, y))
+    pygame.display.update()
+    while y>y2:
+        y -= 1
+        game_window.blit(image, (x, y))
+        pygame.display.update()
+
+def move_down(image, x1, y1, x2, y2):
+    (x, y) = (x1, y1)
+    game_window.blit(image, (x, y))
+    pygame.display.update()
+    while y<y2:
+        y += 1
+        game_window.blit(image, (x, y))
+        pygame.display.update()
+
 # functions for control
 def initialise(tiles):
     i1 = random.randint(0, 3)
@@ -66,12 +118,14 @@ def win(tiles):
 
 def left(tiles):
     global score
+    global number_images
     new_tiles=[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
     for i in range(4):
         p=0
         for j in range(4):
             if tiles[i][j]!=0:
-                new_tiles[i][p]=tiles[i][j]             
+                new_tiles[i][p]=tiles[i][j] 
+                move_left(number_images[tiles[i][j]], j*100, (i+2)*100, p*100, (i+2)*100)            
                 p+=1
 
     for i in range(4):
@@ -79,6 +133,7 @@ def left(tiles):
             if new_tiles[i][j]==new_tiles[i][j+1] and new_tiles[i][j]!=0:
                 new_tiles[i][j]+=new_tiles[i][j]                 
                 new_tiles[i][j+1]=0
+                game_window.blit(number_images[new_tiles[i][j]], (j*100, (i+2)*100))
                 score += new_tiles[i][j]
 
     final_tiles=[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
@@ -86,20 +141,24 @@ def left(tiles):
         q=0
         for j in range(4):
             if new_tiles[i][j]!=0:
-                final_tiles[i][q]=new_tiles[i][j]             
+                final_tiles[i][q]=new_tiles[i][j]   
+                move_left(number_images[new_tiles[i][j]], j*100, (i+2)*100, q*100, (i+2)*100)          
                 q+=1
+
     random_generate(final_tiles)
     win(final_tiles)
     return final_tiles
 
 def right(tiles):
     global score
+    global number_images
     new_tiles=[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
     for i in range(4):
         p=3
         for j in range(4)[::-1]:
             if tiles[i][j]!=0:
-                new_tiles[i][p]=tiles[i][j]             
+                new_tiles[i][p]=tiles[i][j]
+                move_right(number_images[tiles[i][j]], j*100, (i+2)*100, p*100, (i+2)*100)             
                 p-=1
 
     for i in range(4):
@@ -107,6 +166,7 @@ def right(tiles):
             if new_tiles[i][j+1]==new_tiles[i][j] and new_tiles[i][j+1]!=0:
                 new_tiles[i][j+1]+=new_tiles[i][j+1]                 
                 new_tiles[i][j]=0
+                game_window.blit(number_images[new_tiles[i][j+1]], ((j+1)*100, (i+2)*100))
                 score += new_tiles[i][j+1]
 
     final_tiles=[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
@@ -114,7 +174,8 @@ def right(tiles):
         q=3
         for j in range(4)[::-1]:
             if new_tiles[i][j]!=0:
-                final_tiles[i][q]=new_tiles[i][j]             
+                final_tiles[i][q]=new_tiles[i][j]
+                move_right(number_images[new_tiles[i][j]], j*100, (i+2)*100, q*100, (i+2)*100)             
                 q-=1
     random_generate(final_tiles)
     win(final_tiles)
@@ -123,12 +184,14 @@ def right(tiles):
 
 def up(tiles):
     global score
+    global number_images
     new_tiles=[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
     for j in range(4):
         p=0
         for i in range(4):
             if tiles[i][j]!=0:
-                new_tiles[p][j]=tiles[i][j]             
+                new_tiles[p][j]=tiles[i][j] 
+                move_up(number_images[tiles[i][j]], j*100, (i+2)*100, j*100, (p+2)*100)            
                 p+=1
 
     for j in range(4):
@@ -136,6 +199,7 @@ def up(tiles):
             if new_tiles[i][j]==new_tiles[i+1][j] and new_tiles[i][j]!=0:
                 new_tiles[i][j]+=new_tiles[i][j]                 
                 new_tiles[i+1][j]=0
+                game_window.blit(number_images[new_tiles[i][j]], ((j)*100, (i+2)*100))
                 score += new_tiles[i][j]
 
     final_tiles=[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
@@ -143,7 +207,8 @@ def up(tiles):
         q=0
         for i in range(4):
             if new_tiles[i][j]!=0:
-                final_tiles[q][j]=new_tiles[i][j]             
+                final_tiles[q][j]=new_tiles[i][j] 
+                move_up(number_images[new_tiles[i][j]], j*100, (i+2)*100, j*100, (q+2)*100)            
                 q+=1
     random_generate(final_tiles)
     win(final_tiles)
@@ -151,12 +216,14 @@ def up(tiles):
 
 def down(tiles):
     global score
+    global number_images
     new_tiles=[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
     for j in range(4):
         p=3
         for i in range(4)[::-1]:
             if tiles[i][j]!=0:
-                new_tiles[p][j]=tiles[i][j]             
+                new_tiles[p][j]=tiles[i][j]  
+                move_down(number_images[tiles[i][j]], j*100, (i+2)*100, j*100, (p+2)*100)           
                 p-=1
 
     for j in range(4):
@@ -164,6 +231,7 @@ def down(tiles):
             if new_tiles[i+1][j]==new_tiles[i][j] and new_tiles[i+1][j]!=0:
                 new_tiles[i+1][j]+=new_tiles[i+1][j]                 
                 new_tiles[i][j]=0
+                game_window.blit(number_images[new_tiles[i+1][j]], ((j)*100, (i+3)*100))
                 score += new_tiles[i+1][j]
 
     final_tiles=[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
@@ -171,40 +239,17 @@ def down(tiles):
         q=3
         for i in range(4)[::-1]:
             if new_tiles[i][j]!=0:
-                final_tiles[q][j]=new_tiles[i][j]             
+                final_tiles[q][j]=new_tiles[i][j]   
+                move_down(number_images[new_tiles[i][j]], j*100, (i+2)*100, j*100, (q+2)*100)          
                 q-=1
     random_generate(final_tiles)
     win(final_tiles)
     return final_tiles
 
-def mat_to_grid(tiles):
-    game_window.blit(eg, (0, 200))
-    for i in range(4):
-        for j in range(4):
-            if tiles[i][j] == 2:
-                game_window.blit(numbers[0], (j*100, (i+2)*100))
-            elif tiles[i][j] == 4:
-                game_window.blit(numbers[1], (j*100, (i+2)*100))
-            elif tiles[i][j] == 8:
-                game_window.blit(numbers[2], (j*100, (i+2)*100))
-            elif tiles[i][j] == 16:
-                game_window.blit(numbers[3], (j*100, (i+2)*100))
-            elif tiles[i][j] == 32:
-                game_window.blit(numbers[4], (j*100, (i+2)*100))
-            elif tiles[i][j] == 64:
-                game_window.blit(numbers[5], (j*100, (i+2)*100))
-            elif tiles[i][j] == 128:
-                game_window.blit(numbers[6], (j*100, (i+2)*100))
-            elif tiles[i][j] == 256:
-                game_window.blit(numbers[7], (j*100, (i+2)*100))
-            elif tiles[i][j] == 512:
-                game_window.blit(numbers[8], (j*100, (i+2)*100))
-            elif tiles[i][j] == 1024:
-                game_window.blit(numbers[9], (j*100, (i+2)*100))
-            elif tiles[i][j] == 2048:
-                game_window.blit(numbers[10], (j*100, (i+2)*100))
-    pygame.display.update()
 
+
+
+    
 # game loop
 def gameloop():             
     # game variables
@@ -259,7 +304,7 @@ def gameloop():
         text_screen("Score: " + str(score), (0, 0, 255), 5, 5)
         text_screen("Highscore: "+str(highscore), (0, 0, 255), 5, 60)
         pygame.display.update()
-        clock.tick(60)
+        clock.tick(120)
     pygame.quit()
     quit()
 
